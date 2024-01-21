@@ -1,8 +1,13 @@
 local_storage/
 .env
 .env.dist
+
+db/private.*
+db/test.*
+db/private.db.chroma
 db/private.parquet
-db/test.parquet
+
+
 !.env.dist
 venv
 .idea

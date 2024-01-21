@@ -1,5 +1,7 @@
+from pathlib import Path
+
+import click.types
 from click import group, command, echo, argument, pass_context
-from dotenv import load_dotenv
 
 from rag_diary.boot import boot
 from rag_diary.config import Config
@@ -25,6 +27,13 @@ def hello():
 def new_entry(ctx, entry):
     entry_handler: EntryHandler = ctx.obj.get("entry_handler")
     entry_handler.add_entry(entry)
+
+@command()
+@click.argument("entry", type=click.Path(exists=True))
+@pass_context
+def new_entry_file(ctx, entry: Path):
+    entry_handler: EntryHandler = ctx.obj.get("entry_handler")
+    entry_handler.add_new_entry_from_file(entry)
 
 
 cli.add_command(hello)

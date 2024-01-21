@@ -18,6 +18,8 @@ dependencies = [
     "click>=8.1.7",
     "pydantic-settings>=2.1.0",
     "pyarrow>=14.0.2",
-    "fastparquet>=2023.10.1"
-
+    "fastparquet>=2023.10.1",
+    "jupyter>=1.0.0 ",
+    "chromadb>=0.4.22",
+    "python-dotenv>=1.0.0"
 ]
