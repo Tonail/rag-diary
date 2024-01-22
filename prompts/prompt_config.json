@@ -1,0 +1,3 @@
+{
+  "agent_langchain_basic": "./agent_langchain_basic.prompt.txt"
+}

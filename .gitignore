@@ -11,4 +11,7 @@ db/private.parquet
 !.env.dist
 venv
 .idea
-
+__pycache__/
+*.py[cod]
+*$py.class
+rag_diary/__pycache__/

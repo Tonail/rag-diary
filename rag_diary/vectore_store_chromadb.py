@@ -11,12 +11,11 @@ from rag_diary.types import Embedding, Records
 from rag_diary.vectore_store import VectorStore
 
 
-class ChromadbVectorStore(VectorStore):
-
+class VectorStoreChromadb(VectorStore):
     def __init__(self, db_path: Path, collection_name: str):
         self.logger = getLogger(__name__)
         self.db_path: Path = db_path
-        self.client: chromadb.PersistentClient = chromadb.PersistentClient(path=str(db_path.absolute()))
+        self.client: chromadb.ClientAPI = chromadb.PersistentClient(path=str(db_path.absolute()))
         self._check_heartbeat()
 
         self.collection: Collection = self._get_collection(collection_name)
@@ -33,27 +32,21 @@ class ChromadbVectorStore(VectorStore):
         beat = self.client.heartbeat()
         self.logger.debug(f"chromadb:{self.db_path} heartbeat: {beat}")
 
+    def get_client(self) -> chromadb.ClientAPI:
+        return self.client
+
     @staticmethod
     def _query_results_as_records(result: QueryResult) -> Records:
-        return [{
-            "document": document,
-            "_id": result.get("ids", [])[0][index],
-            **result.get("metadatas", [])[0][index]
-        } for index, document in enumerate(result["documents"][0])]
+        return [
+            {"document": document, "_id": result.get("ids", [])[0][index], **result.get("metadatas", [])[0][index]}
+            for index, document in enumerate(result["documents"][0])
+        ]
 
     def add(self, document: str, metadata: dict):
-        self.collection.add(
-            documents=[document],
-            metadatas=[metadata],
-            ids=[str(uuid4())]
-        )
+        self.collection.add(documents=[document], metadatas=[metadata], ids=[str(uuid4())])
 
-    def add_multiple(self, documents: List[str], metadatas: List[dict]):
-        self.collection.add(
-            documents=documents,
-            metadatas=metadatas,
-            ids=[str(uuid4()) for _ in range(len(documents))]
-        )
+    def add_multiple(self, documents: List[str], metadatas: Records):
+        self.collection.add(documents=documents, metadatas=metadatas, ids=[str(uuid4()) for _ in range(len(documents))])
 
     def delete(self, record_id: str):
         self.collection.delete(ids=[record_id])
@@ -62,15 +55,11 @@ class ChromadbVectorStore(VectorStore):
         self.collection.delete(ids=record_ids)
 
     def query_by_str(self, query: str) -> Records:
-        result = self.collection.query(
-            query_texts=query
-        )
+        result = self.collection.query(query_texts=query)
         return self._query_results_as_records(result)
 
     def query_by_embedding(self, query: Embedding) -> Records:
-        result = self.collection.query(
-            query_embeddings=query
-        )
+        result = self.collection.query(query_embeddings=query)
         return self._query_results_as_records(result)
 
     def query_by_image(self, query) -> Records:
