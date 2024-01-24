@@ -1,3 +1,4 @@
 {
-  "agent_langchain_basic": "./agent_langchain_basic.prompt.txt"
+  "agent_langchain_basic__llm_chain": "agent_langchain_basic__llm_chain.prompt.txt",
+  "agent_langchain_basic__document": "agent_langchain_basic__document.prompt.txt"
 }

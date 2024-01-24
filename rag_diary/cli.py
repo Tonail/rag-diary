@@ -36,8 +36,18 @@ def query_db(ctx, query: str):
     logger.info(result)
 
 
+@command()
+@argument("query")
+@pass_context
+def query_retriever_agent(ctx, query: str):
+    controller: Controller = ctx.obj["controller"]
+    result = controller.query_retriever_agent(query)
+    logger.info(result)
+
+
 cli.add_command(new_entry)
 cli.add_command(query_db)
+cli.add_command(query_retriever_agent)
 
 if __name__ == "__main__":
     cli()

@@ -4,7 +4,7 @@ from typing import List, Dict
 from uuid import uuid4
 
 import chromadb
-from chromadb import QueryResult
+from chromadb import QueryResult, EmbeddingFunction
 from chromadb.api.models.Collection import Collection
 
 from rag_diary.types import Embedding, Records
@@ -12,28 +12,15 @@ from rag_diary.vectore_store import VectorStore
 
 
 class VectorStoreChromadb(VectorStore):
-    def __init__(self, db_path: Path, collection_name: str):
+    def __init__(self, client: chromadb.ClientAPI, collection: chromadb.Collection):
         self.logger = getLogger(__name__)
-        self.db_path: Path = db_path
-        self.client: chromadb.ClientAPI = chromadb.PersistentClient(path=str(db_path.absolute()))
+        self.client: chromadb.ClientAPI = client
         self._check_heartbeat()
-
-        self.collection: Collection = self._get_collection(collection_name)
-
-    def _get_collection(self, collection_name: str) -> chromadb.Collection:
-        try:
-            return self.client.get_collection(collection_name)
-        except ValueError as err:
-            self.logger.warning(err)
-            self.logger.info("getting new collection")
-            return self.client.create_collection(collection_name)
+        self.collection = collection
 
     def _check_heartbeat(self):
         beat = self.client.heartbeat()
-        self.logger.debug(f"chromadb:{self.db_path} heartbeat: {beat}")
-
-    def get_client(self) -> chromadb.ClientAPI:
-        return self.client
+        self.logger.debug(f"chromadb heartbeat: {beat}")
 
     @staticmethod
     def _query_results_as_records(result: QueryResult) -> Records:
@@ -42,16 +29,16 @@ class VectorStoreChromadb(VectorStore):
             for index, document in enumerate(result["documents"][0])
         ]
 
-    def add(self, document: str, metadata: dict):
+    def add(self, document: str, metadata: dict, **kwargs):
         self.collection.add(documents=[document], metadatas=[metadata], ids=[str(uuid4())])
 
-    def add_multiple(self, documents: List[str], metadatas: Records):
+    def add_multiple(self, documents: List[str], metadatas: Records, **kwargs):
         self.collection.add(documents=documents, metadatas=metadatas, ids=[str(uuid4()) for _ in range(len(documents))])
 
-    def delete(self, record_id: str):
+    def delete(self, record_id: str, **kwargs):
         self.collection.delete(ids=[record_id])
 
-    def delete_multiple(self, record_ids: List[str]):
+    def delete_multiple(self, record_ids: List[str], **kwargs):
         self.collection.delete(ids=record_ids)
 
     def query_by_str(self, query: str) -> Records:
@@ -64,3 +51,12 @@ class VectorStoreChromadb(VectorStore):
 
     def query_by_image(self, query) -> Records:
         raise NotImplementedError("query_by_image not implemented")
+
+
+def get_chromadb_collection(
+    client: chromadb.ClientAPI, collection_name: str, embedding_function: chromadb.EmbeddingFunction
+) -> chromadb.Collection:
+    try:
+        return client.get_collection(collection_name)
+    except ValueError:
+        return client.create_collection(collection_name, embedding_function=embedding_function)

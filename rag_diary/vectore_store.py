@@ -1,24 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from rag_diary.types import Embedding
 
 
 class VectorStore(ABC):
     @abstractmethod
-    def _check_heartbeat(self):
-        raise NotImplementedError("Heartbeat not implemented")
-
-    @abstractmethod
-    def get_client(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    def add(self, document: str, metadata: dict):
+    def add(self, document: str, metadata: dict, embedding: Optional[Embedding] = None) -> None:
         raise NotImplementedError("Add not implemented")
 
     @abstractmethod
-    def add_multiple(self, documents: List[str], metadatas: List[dict]):
+    def add_multiple(self, documents: List[str], metadatas: List[dict], embeddings: Optional[List[Embedding]] = None):
         raise NotImplementedError("Add not implemented")
 
     @abstractmethod
