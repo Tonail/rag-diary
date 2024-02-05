@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import List, Dict
 
 from rag_diary.agent import Agent
-from rag_diary.vectore_store import VectorStore
+from rag_diary.vector_store import VectorStore
 from rag_diary.types import Entry, AgentJob
 
 

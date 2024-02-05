@@ -1,14 +1,12 @@
 from logging import getLogger
-from pathlib import Path
-from typing import List, Dict
+from typing import List
 from uuid import uuid4
 
 import chromadb
-from chromadb import QueryResult, EmbeddingFunction
-from chromadb.api.models.Collection import Collection
+from chromadb import QueryResult
 
 from rag_diary.types import Embedding, Records
-from rag_diary.vectore_store import VectorStore
+from rag_diary.vector_store import VectorStore
 
 
 class VectorStoreChromadb(VectorStore):

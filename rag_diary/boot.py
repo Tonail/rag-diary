@@ -14,8 +14,8 @@ from langchain_openai.llms import OpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 
 from rag_diary.controller import Controller
-from rag_diary.vectore_store import VectorStore
-from rag_diary.vectore_store_chromadb import VectorStoreChromadb, get_chromadb_collection
+from rag_diary.vector_store import VectorStore
+from rag_diary.vector_store_chromadb import VectorStoreChromadb, get_chromadb_collection
 
 
 def boot(config: Config) -> Controller:

@@ -7,7 +7,7 @@ from langchain_core.documents import Document, BaseDocumentTransformer
 
 from rag_diary.agent import Agent
 from rag_diary.types import AgentJob
-from rag_diary.vectore_store import VectorStore
+from rag_diary.vector_store import VectorStore
 from langchain.prompts import PromptTemplate
 from langchain.llms import BaseLLM
 from langchain.chains import LLMChain, StuffDocumentsChain

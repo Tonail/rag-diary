@@ -15,3 +15,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 rag_diary/__pycache__/
+
+.DS_Store
